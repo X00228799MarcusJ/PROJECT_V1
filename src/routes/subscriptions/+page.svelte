@@ -188,9 +188,12 @@
             </div>
 
             <div class="text-center">
-                <button type="button" class="btn btn-primary btn-lg px-5" onclick={() => step = 2}>
-                    Continue <i class="bi bi-arrow-right ms-1"></i>
-                </button>
+                <form method="POST" action="?/subscribe">
+                    <input type="hidden" name="plan" value={selectedPlan}>
+                    <button type="button" class="btn btn-primary btn-lg px-5" onclick={() => step = 2}>
+                        Continue <i class="bi bi-arrow-right ms-1"></i>
+                    </button>
+                </form>
             </div>
         </div>
         {/if}
@@ -229,9 +232,15 @@
                             <button type="button" class="btn btn-outline-secondary" onclick={() => step = 1}>
                                 <i class="bi bi-arrow-left me-1"></i> Back
                             </button>
-                            <button type="button" class="btn btn-primary" onclick={() => step = 3}>
-                                Continue <i class="bi bi-arrow-right ms-1"></i>
-                            </button>
+                            
+                            
+                            <form method="POST" action="?/subscribe">
+                                <input type="hidden" name="plan" value={selectedPlan}/>
+                                <input type="hidden" name="billing" value={billing}/>
+                                <button type="submit" class="btn btn-primary">Continue<i class="bi bi-arrow-right ms-1"></i></button>
+                            </form>
+
+
                         </div>
                     </div>
                 </div>
@@ -311,3 +320,4 @@
         {/if}
     </form>
 </div>
+<br><br><br><br>

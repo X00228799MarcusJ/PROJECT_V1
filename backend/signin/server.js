@@ -81,6 +81,16 @@ app.get("/check", (req, res) => {
   });
 });
 
+// Admin Route: Delete a user by ID
+app.delete("/delete-user/:id", (req, res) => {
+  const id = req.params.id;
+  db.run("DELETE FROM users WHERE id = ?", [id], (err) => {
+    if (err) {
+      return res.json({ success: false, message: "Database error" });
+    }
+    res.json({ success: true, message: "User deleted" });
+  });
+});
 app.listen(3001, () => {
   console.log("running on http://localhost:3001");
 });
