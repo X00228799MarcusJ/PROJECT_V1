@@ -6,7 +6,6 @@
 
 	async function loadUsers() {
 		try {
-			// Connects to your server.js
 			const res = await fetch('http://localhost:3001/check');
 			const data = await res.json();
 			users = data;
@@ -26,6 +25,21 @@
 		if (data.success) {
 			message = "Member deleted.";
 			loadUsers(); 
+		}
+	}
+
+	async function updateMembership(id, membership) {
+		const res = await fetch(`http://localhost:3001/update-membership/${id}`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ membership })
+		});
+
+		const data = await res.json();
+
+		if (data.success) {
+			message = "Membership updated.";
+			loadUsers();
 		}
 	}
 
@@ -60,15 +74,29 @@
 							<th class="ps-3 text-muted small">ID</th>
 							<th class="text-muted small">NAME</th>
 							<th class="text-muted small">EMAIL</th>
+							<th class="text-muted small">MEMBERSHIP</th>
 							<th class="text-end pe-4 text-muted small">ACTIONS</th>
 						</tr>
 					</thead>
+
 					<tbody>
 						{#each users as user}
 							<tr>
 								<td class="ps-3 text-muted">{user.id}</td>
 								<td><b>{user.name}</b></td>
 								<td>{user.email}</td>
+
+								<td>
+									<select
+										class="form-select form-select-sm"
+										onchange={(e) => updateMembership(user.id, e.target.value)}
+									>
+										<option value="basic" selected={user.membership === "basic"}>basic</option>
+										<option value="pro" selected={user.membership === "pro"}>Pro</option>
+										<option value="premium" selected={user.membership === "premium"}>Premium</option>
+									</select>
+								</td>
+
 								<td class="text-end pe-4">
 									<button class="btn btn-outline-danger btn-sm" onclick={() => deleteUser(user.id)}>
 										Remove

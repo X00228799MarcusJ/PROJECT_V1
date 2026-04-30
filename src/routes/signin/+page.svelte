@@ -1,43 +1,68 @@
 <script>
-	import 'bootstrap/dist/css/bootstrap.min.css';
-	import 'bootstrap-icons/font/bootstrap-icons.min.css';
-
 	let email = "";
 	let password = "";
+	let message = "";
 
-	async function login(event) {
-		event.preventDefault();
+	async function login(e) {
+		e.preventDefault();
+		message = "";
 
-		const res = await fetch('/api/login', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ email, password })
-		});
+		const cleanEmail = email.trim().toLowerCase();
+		const cleanPassword = password.trim();
 
-		const data = await res.json();
+		if (!cleanEmail) return message = "enter email";
+		if (!cleanPassword) return message = "enter password";
 
-		if (data.success) {
-			// store user
-			localStorage.setItem("user", JSON.stringify(data.user));
+		// ✅ ADMIN LOGIN
+		if (cleanEmail === "admin" && cleanPassword === "admin") {
+			const adminUser = {
+				id: 999,
+				name: "admin",
+				email: "admin",
+				membership: "premium",
+				isAdmin: true
+			};
 
-			// go to user page
-			window.location.href = "/user";
-		} else {
-			alert("login failed");
+			localStorage.setItem("user", JSON.stringify(adminUser));
+			window.location.assign("/admin");
+			return;
+		}
+
+		try {
+			const res = await fetch('http://localhost:3001/signin', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ email: cleanEmail, password: cleanPassword })
+			});
+
+			const data = await res.json();
+			console.log("LOGIN:", data);
+
+			if (data.success) {
+				localStorage.setItem("user", JSON.stringify(data.user));
+				window.location.assign("/user");
+			} else {
+				message = data.message;
+			}
+
+		} catch (err) {
+			console.error(err);
+			message = "server not reachable";
 		}
 	}
 </script>
 
-<form class="m-3" on:submit={login}>
-	<b>email address</b><br>
-	<input type="text" bind:value={email} /><br><br>
+<h2>Sign in</h2>
 
-	<b>password</b><br>
-	<input type="password" bind:value={password} /><br><br>
+<form on:submit|preventDefault={login}>
+	<input bind:value={email} placeholder="email"><br><br>
+	<input type="password" bind:value={password} placeholder="password"><br><br>
 
-	<button type="submit" class="btn btn-primary m-3">login</button>
-	<button type="button" class="btn btn-primary m-3">forgot password</button>
-	<a class="btn btn-primary" href="/register">register</a>
+	<button type="submit">login</button>
+
+	<button type="button" on:click={() => window.location.href = "/register"}>
+		register
+	</button>
 </form>
+
+<p>{message}</p>

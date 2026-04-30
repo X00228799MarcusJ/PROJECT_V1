@@ -10,87 +10,80 @@ app.use(express.json());
 const db = new sqlite3.Database("database.db");
 
 db.run(`
-  CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY,
-    name TEXT,
-    email TEXT UNIQUE,
-    password TEXT
-  )
+	CREATE TABLE IF NOT EXISTS users (
+		id INTEGER PRIMARY KEY,
+		name TEXT,
+		email TEXT UNIQUE,
+		password TEXT,
+		membership TEXT DEFAULT 'basic'
+	)
 `);
 
-app.get("/", (req, res) => {
-  res.send("backend is working");
-});
-
 app.post("/register", (req, res) => {
-  const name = req.body.name;
-  const email = req.body.email;
-  const password = req.body.password;
+	const { name, email, password } = req.body;
 
-  if (!password || password.trim() === "") {
-    return res.json({ success: false, message: "please enter a password" });
-  }
-  if (!email || email.trim() === "") {
-    return res.json({ success: false, message: "please enter a email" });
-  }
-  if (!name || name.trim() === "") {
-    return res.json({ success: false, message: "please enter a name" });
-  }
+	if (!name || !email || !password) {
+		return res.json({ success: false, message: "fill all fields" });
+	}
 
-
-  db.get("SELECT * FROM users WHERE email = ?", [email], (err, user) => {
-    if (user) {
-      return res.json({ success: false, message: "email already used" });
-    }
-
-    db.run(
-      "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-      [name, email, password],
-      (err) => {
-        if (err) {
-          console.log(err);
-          return res.json({ success: false, message: "something went wrong" });
-        }
-
-        res.json({ success: true, message: "account made" });
-      }
-    );
-  });
+	db.run(
+		"INSERT INTO users (name, email, password, membership) VALUES (?, ?, ?, ?)",
+		[name, email, password, "basic"],
+		(err) => {
+			if (err) {
+				return res.json({ success: false, message: "email already used" });
+			}
+			res.json({ success: true });
+		}
+	);
 });
 
 app.post("/signin", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+	const { email, password } = req.body;
 
-  db.get(
-    "SELECT * FROM users WHERE email = ? AND password = ?",
-    [email, password],
-    (err, user) => {
-      if (!user) {
-        return res.json({ success: false, message: "wrong details" });
-      }
+	db.get(
+		"SELECT * FROM users WHERE email = ? AND password = ?",
+		[email, password],
+		(err, user) => {
 
-      res.json({ success: true, message: "logged in" });
-    }
-  );
+			if (!user) {
+				return res.json({ success: false, message: "wrong details" });
+			}
+
+			res.json({
+				success: true,
+				user: {
+					id: user.id,
+					name: user.name,
+					email: user.email,
+					membership: user.membership
+				}
+			});
+		}
+	);
 });
 
+app.put("/update-membership/:id", (req, res) => {
+	const id = req.params.id;
+	const { membership } = req.body;
+
+	db.run(
+		"UPDATE users SET membership = ? WHERE id = ?",
+		[membership, id],
+		(err) => {
+			if (err) return res.json({ success: false });
+			res.json({ success: true });
+		}
+	);
+});
 app.get("/check", (req, res) => {
-  db.all("SELECT * FROM users", [], (err, rows) => {
-    res.json(rows);
-  });
-});
-
-// Admin Route: Delete a user by ID
-app.delete("/delete-user/:id", (req, res) => {
-  const id = req.params.id;
-  db.run("DELETE FROM users WHERE id = ?", [id], (err) => {
-    if (err) {
-      return res.json({ success: false, message: "Database error" });
-    }
-    res.json({ success: true, message: "User deleted" });
-  });
+	db.all("SELECT * FROM users", [], (err, rows) => {
+		if (err) {
+			return res.json([]);
+		}
+		res.json(rows);
+	});
 });
 app.listen(3001, () => {
-  console.log("running on http://localhost:3001");
+	console.log("running on http://localhost:3001");
 });

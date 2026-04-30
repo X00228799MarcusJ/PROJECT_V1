@@ -33,9 +33,6 @@
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="/about"><i class="bi bi-info-square-fill me-1"></i>About</a>
-                        <li class="nav-item">
-                      <a class="nav-link text-warning" href="/admin"><i class="bi bi-shield-lock-fill me-1"></i>Admin</a>
-                                                                                                                          
 					</li>
 				</ul>
 			</div>

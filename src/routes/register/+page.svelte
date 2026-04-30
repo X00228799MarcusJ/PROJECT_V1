@@ -33,9 +33,9 @@
 <h2>Register</h2>
 
 <form on:submit={register}>
-	<input placeholder="name" bind:value={name} />
-	<input placeholder="email" bind:value={email} />
-	<input type="password" placeholder="password" bind:value={password} />
+	<input placeholder="name" bind:value={name} /> <br>
+	<input placeholder="email" bind:value={email} /><br>
+	<input type="password" placeholder="password" bind:value={password} /><br>
 	<button>make account</button>
 </form>
 
