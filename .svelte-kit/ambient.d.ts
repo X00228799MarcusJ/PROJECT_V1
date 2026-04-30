@@ -38,6 +38,8 @@
  * The above values will be the same _even if_ different values for `ENVIRONMENT` or `PUBLIC_BASE_URL` are set at runtime, as they are statically replaced in your code with their build time values.
  */
 declare module '$env/static/private' {
+	export const DATABASE_URL: string;
+	export const STRIPE_SECRET_KEY: string;
 	export const ACSetupSvcPort: string;
 	export const ACSvcPort: string;
 	export const ALLUSERSPROFILE: string;
@@ -208,6 +210,8 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
+		DATABASE_URL: string;
+		STRIPE_SECRET_KEY: string;
 		ACSetupSvcPort: string;
 		ACSvcPort: string;
 		ALLUSERSPROFILE: string;
