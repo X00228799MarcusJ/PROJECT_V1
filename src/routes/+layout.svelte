@@ -74,11 +74,8 @@
 		</div>
 	</nav>
 </footer>
-<<<<<<< HEAD
-=======
 
 
->>>>>>> 23ee867 (reigister 2)
 <div class="container-xl bd-gutter my-md-4 bd-layout">
   {@render children()}
 </div>
