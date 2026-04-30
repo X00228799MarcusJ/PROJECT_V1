@@ -1,13 +1,10 @@
 <script>
-	import favicon from '$lib/assets/favicon.svg';
-	import { browser } from '$app/environment';
-	import 'bootstrap/dist/css/bootstrap.min.css'
+	import 'bootstrap/dist/css/bootstrap.min.css';
 	import 'bootstrap-icons/font/bootstrap-icons.min.css';
-	import { preventDefault } from 'svelte/legacy';
 
 	let email = "";
 	let password = "";
-	
+
 	async function login(event) {
 		event.preventDefault();
 
@@ -20,27 +17,27 @@
 		});
 
 		const data = await res.json();
-		console.log(data);
 
 		if (data.success) {
-			alert("login successful");
+			// store user
+			localStorage.setItem("user", JSON.stringify(data.user));
+
+			// go to user page
+			window.location.href = "/user";
 		} else {
 			alert("login failed");
 		}
-
 	}
 </script>
 
-
-
-
-<form class="m-3">
+<form class="m-3" on:submit={login}>
 	<b>email address</b><br>
 	<input type="text" bind:value={email} /><br><br>
+
 	<b>password</b><br>
-	<input type="text" bind:value={password} /><br><br>
-	<button class="btn btn-primary m-3" onclick={login}>login</button>
-	<button class="btn btn-primary m-3">forgot password</button>
+	<input type="password" bind:value={password} /><br><br>
+
+	<button type="submit" class="btn btn-primary m-3">login</button>
+	<button type="button" class="btn btn-primary m-3">forgot password</button>
 	<a class="btn btn-primary" href="/register">register</a>
-	
 </form>
